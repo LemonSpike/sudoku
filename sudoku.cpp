@@ -33,8 +33,6 @@ void load_board(const char* filename, char board[9][9]) {
     in.getline(buffer,512);
   }
 
-  in.close();
-  
   cout << ((row == 9) ? "Success!" : "Failed!") << '\n';
   assert(row == 9);
 }
@@ -146,7 +144,7 @@ bool digit_exists_on_position(const char board[9][9],
 			      const int row_index,
 			      const int column_index) {
   char value = board[row_index][column_index];
-  return isdigit(value);
+  return (value > 48 && value < 58);
 }
 
 /* this function checks if the digit can be placed at a position. */ 
@@ -179,7 +177,7 @@ bool digit_is_allowed(const int row_index,
    altered. Otherwise, the function returns true and the board is updated. */
 bool make_move(const char position[2], const char digit, char board[9][9]) {
   /* check if digit is in range. */
-  if (!isdigit(digit))
+  if (digit < 49 || digit > 57)
     return false;
 
   if (!position_is_valid(position))
@@ -218,12 +216,16 @@ bool save_board(const char *filename, const char board[9][9]) {
       out.put(board[row][n]);
       out.flush();
     }
-    out.put('\n');
+    out << endl;
     out.flush();
     row++;
   }
+
+  if (out.fail())
+    return false;
+
+  //the file has saved successfully
   
-  out.close();
   return row == 9;
 }		  
 
@@ -257,20 +259,31 @@ void load_empty_position(char position[2], const char board[9][9]) {
 /* this function returns true if the board can be solved and updates
    the board with the solution. Otherwise, it returns false. */
 bool solve_board(char board[9][9]) {
-  
+
+  /* if the board is complete, we have solved the board. */
   if (is_complete(board))
     return true;
 
+  /* find the next empty position to make a move. */
   char position[2];
   load_empty_position(position, board);
+
   
+  /* try each digit for the loaded position. */
   for (char digit = '1'; digit <= '9'; digit++) {
+
+    /* make the move if it's possible. */
       if (make_move(position, digit, board)) {
+	
+	/*  return true if the move solves the board. */
 	  if (solve_board(board))
 	    return true;
+
+	  /* clear the move if it doesn't solve the board. */
 	  set_square_empty(position, board);
       }
   }
+  /* the board has no solution, every digit has been tried. */
   
   return false;
 }
