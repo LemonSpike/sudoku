@@ -76,7 +76,7 @@ void display_board(const char board[9][9]) {
    and false otherwise */
 bool is_complete_row(const char* row) {
   for (int column_index = 0; column_index < 9; column_index++) {
-    if (!isdigit(row[column_index]))
+    if (row[column_index] < 49 || row[column_index] > 57)
       return false;
   }
   return true;
