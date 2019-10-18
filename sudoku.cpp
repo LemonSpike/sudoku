@@ -33,6 +33,8 @@ void load_board(const char* filename, char board[9][9]) {
     in.getline(buffer,512);
   }
 
+  in.close();
+  
   cout << ((row == 9) ? "Success!" : "Failed!") << '\n';
   assert(row == 9);
 }
@@ -68,4 +70,207 @@ void display_board(const char board[9][9]) {
   print_frame(9);
 }
 
-/* add your functions here */
+/* Question 1 */
+
+/* this function returns true if all row positions are occupied by digits,
+   and false otherwise */
+bool is_complete_row(const char* row) {
+  for (int column_index = 0; column_index < 9; column_index++) {
+    if (!isdigit(row[column_index]))
+      return false;
+  }
+  return true;
+}
+
+/* this function returns true if all board positions are occupied by digits,
+   and false otherwise */
+bool is_complete(const char board[9][9]) {
+  for (int row_index = 0; row_index < 9; row_index++) {
+    if (!is_complete_row(board[row_index]))
+      return false;
+  }
+  return true;
+}
+
+/* Question 2 */
+
+/* this function tests if the position exists on the sudoku grid. */
+bool position_is_valid(const char position[2]) {
+  return (position[0] > 64 && position[0] < 74 &&
+	  position[1] > 48 && position[1] < 58);
+}
+
+/* this function tests if the digit already exists in a particular row. */
+bool digit_exists_in_row(const char digit, const char *row) {
+  for (int column_index = 0; column_index < 9; column_index++) {
+    if (row[column_index] == digit)
+      return true;
+  }
+  return false;
+}
+
+/* this function tests if the digit already exists in a particular column. */
+bool digit_exists_in_column(const char digit,
+			    const char board[9][9],
+			    const int column_index) {
+  for (int row_index = 0; row_index < 9; row_index++) {
+    if (board[row_index][column_index] == digit)
+      return true;
+  }
+  return false;
+}
+
+/* this function tests if the digit already exists in the
+   3 x 3 box for a given position. */
+bool digit_exists_in_box(const char digit,
+		         const char board[9][9],
+			 const int row_index,
+			 const int column_index) {
+  
+  int box_row = (row_index / 3) * 3;
+  int box_column = (column_index / 3) * 3;
+  
+  for (int row = box_row; row < box_row + 3; row++) {
+    for (int column = box_column; column < box_column + 3; column++) {
+      if (board[row][column] == digit)
+	return true;
+    }
+  }
+  
+  return false;
+}
+
+/* this function checks if a digit already exists at a given board
+   position. */
+bool digit_exists_on_position(const char board[9][9],
+			      const int row_index,
+			      const int column_index) {
+  char value = board[row_index][column_index];
+  return isdigit(value);
+}
+
+/* this function checks if the digit can be placed at a position. */ 
+bool digit_is_allowed(const int row_index,
+		      const int column_index,
+		      const char digit,
+		      char board[9][9]) {  
+
+  if (digit_exists_on_position(board, row_index, column_index))
+    return false;
+
+  char *row = board[row_index];
+  if (digit_exists_in_row(digit, row))
+    return false;
+
+  if (digit_exists_in_column(digit, board, column_index))
+    return false;
+
+  /* check if the digit exists in the 3 x 3 block for the position. */ 
+  if (digit_exists_in_box(digit, board, row_index, column_index))
+    return false;
+
+  /* the digit can be placed at this position, so return true. */
+  return true;
+}
+
+/* This function attempts to place a digit onto a Sudoku board at a given 
+   position. If the position is invalid, or the placing of the digit at 
+   position is invalid, the function returns false and the board is not
+   altered. Otherwise, the function returns true and the board is updated. */
+bool make_move(const char position[2], const char digit, char board[9][9]) {
+  /* check if digit is in range. */
+  if (!isdigit(digit))
+    return false;
+
+  if (!position_is_valid(position))
+    return false;
+
+  int row_index = position[0] - 65;
+  int column_index = position[1] - 49;
+
+  /* checks if digit is allowed according to game rules. */
+  if (!digit_is_allowed(row_index, column_index, digit, board))
+    return false;
+  
+  /* the position is valid, so we set the position's digit,
+     and return true. */
+  board[row_index][column_index] = digit;
+  return true;
+}
+
+/* Question 3 */
+
+/* This function saves the board into a file called 'filename'. */
+bool save_board(const char *filename, const char board[9][9]) {
+
+  ofstream out(filename);
+
+  if (!out)
+    return false;
+  
+  int row = 0;
+  while (out && row < 9) {
+    for (int n = 0; n < 9; n++) {
+      if (board[row][n] != '.' && !isdigit(board[row][n])) {
+	out.close();
+	return false;
+      }
+      out.put(board[row][n]);
+      out.flush();
+    }
+    out.put('\n');
+    out.flush();
+    row++;
+  }
+  
+  out.close();
+  return row == 9;
+}		  
+
+/* Question 4 */
+
+/* this is a helper function to clear a square. */
+bool set_square_empty(const char position[2], char board[9][9]) {
+
+  if (!position_is_valid(position))
+    return false;
+  
+  int row_index = position[0] - 65;
+  int column_index = position[1] - 49;
+  board[row_index][column_index] = '.';
+
+  return true;
+}
+
+/* this function points the position to an empty square. */
+void load_empty_position(char position[2], const char board[9][9]) {
+  for (int r = 0; r < 9; r++) {
+    for (int c = 0; c < 9; c++) {
+      if (board[r][c] == '.') {
+	position[0] = r + 65;
+	position[1] = c + 49;
+      }	
+    }
+  }
+}
+
+/* this function returns true if the board can be solved and updates
+   the board with the solution. Otherwise, it returns false. */
+bool solve_board(char board[9][9]) {
+  
+  if (is_complete(board))
+    return true;
+
+  char position[2];
+  load_empty_position(position, board);
+  
+  for (char digit = '1'; digit <= '9'; digit++) {
+      if (make_move(position, digit, board)) {
+	  if (solve_board(board))
+	    return true;
+	  set_square_empty(position, board);
+      }
+  }
+  
+  return false;
+}
