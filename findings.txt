@@ -1,1 +1,187 @@
-Summarise your findings here (see specification).
+The results showed that:
+
+1. Impossible Puzzle to Solve: mystery2.dat
+2. Very Hard Puzzle to Solve: mystery1.dat
+3. Hard Puzzle to Solve: mystery3.dat
+
+This was discovered as solve_board returned false for mystery2.dat,
+showing that this puzzle was impossible, and by time profiling
+solve_board for each case.
+
+The program main.cpp output is as follows:
+
+=================== Question 5 ===================
+
+Loading Sudoku board from file 'mystery1.dat'... Success!
+
+Displaying unsolved Sudoku board mystery1 with display_board():
+    1   2   3   4   5   6   7   8   9
+  +===========+===========+===========+
+A | 8 : 1 :   |   :   : 6 | 2 :   :   |
+  +---+---+---+---+---+---+---+---+---+
+B |   :   :   |   : 1 :   |   : 6 :   |
+  +---+---+---+---+---+---+---+---+---+
+C | 7 :   :   |   : 3 :   |   :   : 9 |
+  +===========+===========+===========+
+D |   :   :   |   :   :   |   :   :   |
+  +---+---+---+---+---+---+---+---+---+
+E |   : 7 : 2 |   :   :   | 9 : 1 :   |
+  +---+---+---+---+---+---+---+---+---+
+F |   :   :   | 4 :   : 2 |   :   :   |
+  +===========+===========+===========+
+G |   :   :   |   : 2 :   |   :   : 4 |
+  +---+---+---+---+---+---+---+---+---+
+H |   : 9 :   |   : 5 :   |   :   :   |
+  +---+---+---+---+---+---+---+---+---+
+I |   :   : 5 |   :   : 8 |   : 3 : 6 |
+  +===========+===========+===========+
+The 'mystery1' board has a solution:
+    1   2   3   4   5   6   7   8   9
+  +===========+===========+===========+
+A | 8 : 1 : 9 | 7 : 4 : 6 | 2 : 5 : 3 |
+  +---+---+---+---+---+---+---+---+---+
+B | 5 : 2 : 3 | 8 : 1 : 9 | 4 : 6 : 7 |
+  +---+---+---+---+---+---+---+---+---+
+C | 7 : 6 : 4 | 2 : 3 : 5 | 1 : 8 : 9 |
+  +===========+===========+===========+
+D | 6 : 5 : 8 | 9 : 7 : 1 | 3 : 4 : 2 |
+  +---+---+---+---+---+---+---+---+---+
+E | 4 : 7 : 2 | 5 : 6 : 3 | 9 : 1 : 8 |
+  +---+---+---+---+---+---+---+---+---+
+F | 9 : 3 : 1 | 4 : 8 : 2 | 6 : 7 : 5 |
+  +===========+===========+===========+
+G | 1 : 8 : 6 | 3 : 2 : 7 | 5 : 9 : 4 |
+  +---+---+---+---+---+---+---+---+---+
+H | 3 : 9 : 7 | 6 : 5 : 4 | 8 : 2 : 1 |
+  +---+---+---+---+---+---+---+---+---+
+I | 2 : 4 : 5 | 1 : 9 : 8 | 7 : 3 : 6 |
+  +===========+===========+===========+
+Time taken: 0.048066 s
+
+Loading Sudoku board from file 'mystery2.dat'... Success!
+
+Displaying unsolved Sudoku board mystery2 with display_board():
+    1   2   3   4   5   6   7   8   9
+  +===========+===========+===========+
+A |   : 7 :   |   :   : 6 |   :   :   |
+  +---+---+---+---+---+---+---+---+---+
+B | 9 :   :   |   :   :   |   : 4 : 1 |
+  +---+---+---+---+---+---+---+---+---+
+C |   :   : 8 |   :   : 9 |   : 5 :   |
+  +===========+===========+===========+
+D |   : 9 :   |   :   : 7 |   :   : 2 |
+  +---+---+---+---+---+---+---+---+---+
+E |   :   : 3 |   :   :   | 8 :   :   |
+  +---+---+---+---+---+---+---+---+---+
+F | 4 :   :   | 8 :   :   |   : 1 :   |
+  +===========+===========+===========+
+G |   : 8 :   | 3 :   :   | 9 :   :   |
+  +---+---+---+---+---+---+---+---+---+
+H | 1 : 6 :   |   :   :   |   :   : 7 |
+  +---+---+---+---+---+---+---+---+---+
+I |   :   :   | 5 :   :   |   : 8 :   |
+  +===========+===========+===========+
+A solution cannot be found.
+    1   2   3   4   5   6   7   8   9
+  +===========+===========+===========+
+A |   : 7 :   |   :   : 6 |   :   :   |
+  +---+---+---+---+---+---+---+---+---+
+B | 9 :   :   |   :   :   |   : 4 : 1 |
+  +---+---+---+---+---+---+---+---+---+
+C |   :   : 8 |   :   : 9 |   : 5 :   |
+  +===========+===========+===========+
+D |   : 9 :   |   :   : 7 |   :   : 2 |
+  +---+---+---+---+---+---+---+---+---+
+E |   :   : 3 |   :   :   | 8 :   :   |
+  +---+---+---+---+---+---+---+---+---+
+F | 4 :   :   | 8 :   :   |   : 1 :   |
+  +===========+===========+===========+
+G |   : 8 :   | 3 :   :   | 9 :   :   |
+  +---+---+---+---+---+---+---+---+---+
+H | 1 : 6 :   |   :   :   |   :   : 7 |
+  +---+---+---+---+---+---+---+---+---+
+I |   :   :   | 5 :   :   |   : 8 :   |
+  +===========+===========+===========+
+Time taken: 0.005269 s
+
+Loading Sudoku board from file 'mystery3.dat'... Success!
+
+Displaying unsolved Sudoku board mystery3 with display_board():
+    1   2   3   4   5   6   7   8   9
+  +===========+===========+===========+
+A |   :   :   |   :   :   |   :   :   |
+  +---+---+---+---+---+---+---+---+---+
+B |   : 2 :   | 5 :   : 4 |   : 7 :   |
+  +---+---+---+---+---+---+---+---+---+
+C | 7 :   : 5 |   :   :   | 1 :   : 8 |
+  +===========+===========+===========+
+D |   : 6 :   |   : 8 :   |   : 9 :   |
+  +---+---+---+---+---+---+---+---+---+
+E |   :   :   | 4 :   : 2 |   :   :   |
+  +---+---+---+---+---+---+---+---+---+
+F |   : 9 :   |   : 3 :   |   : 5 :   |
+  +===========+===========+===========+
+G | 8 :   : 9 |   :   :   | 6 :   : 3 |
+  +---+---+---+---+---+---+---+---+---+
+H |   : 5 :   | 9 :   : 8 |   : 2 :   |
+  +---+---+---+---+---+---+---+---+---+
+I |   :   :   |   :   :   |   :   :   |
+  +===========+===========+===========+
+The 'mystery3' board has a solution:
+    1   2   3   4   5   6   7   8   9
+  +===========+===========+===========+
+A | 9 : 1 : 4 | 8 : 7 : 3 | 5 : 6 : 2 |
+  +---+---+---+---+---+---+---+---+---+
+B | 6 : 2 : 8 | 5 : 1 : 4 | 3 : 7 : 9 |
+  +---+---+---+---+---+---+---+---+---+
+C | 7 : 3 : 5 | 6 : 2 : 9 | 1 : 4 : 8 |
+  +===========+===========+===========+
+D | 3 : 6 : 7 | 1 : 8 : 5 | 2 : 9 : 4 |
+  +---+---+---+---+---+---+---+---+---+
+E | 5 : 8 : 1 | 4 : 9 : 2 | 7 : 3 : 6 |
+  +---+---+---+---+---+---+---+---+---+
+F | 4 : 9 : 2 | 7 : 3 : 6 | 8 : 5 : 1 |
+  +===========+===========+===========+
+G | 8 : 4 : 9 | 2 : 5 : 7 | 6 : 1 : 3 |
+  +---+---+---+---+---+---+---+---+---+
+H | 1 : 5 : 3 | 9 : 6 : 8 | 4 : 2 : 7 |
+  +---+---+---+---+---+---+---+---+---+
+I | 2 : 7 : 6 | 3 : 4 : 1 | 9 : 8 : 5 |
+  +===========+===========+===========+
+Time taken: 0.01571 s
+
+=================== Question 5 ===================
+
+As we can see the solutions for mystery1.dat and mystery3.dat are
+valid.
+
+In main.cpp, I measured the time taken for calling the solve_board
+function:
+- mystery1.dat took 0.048066s to solve.
+- mystery2.dat took 0.005269s to find out that the puzzle was
+impossible.
+- mystery3.dat took 0.01571s to solve.
+
+From this I inferred that the longer a puzzle took to be solved, the
+harder it was. I thought more difficult puzzles would have very few
+solutions, so more instructions would need to be made to exhaustively
+search for a solution.
+
+Solving mystery2.dat takes the least time as solve_board quickly
+discovers that there are not many possible moves (make_move returns
+false for all positions quite early in the program). This explains the
+large time difference between solving mystery3.dat and mystery2.dat,
+taking approximately 3 times longer to solve.
+
+The number of missing digits in each 'mystery' file is:
+mystery1 - 58
+mystery2 - 57
+mystery3 - 57
+
+This shows that they are all similarly difficult-to-solve puzzles.
+
+Even though there is only one less missing digit(57) in the original
+mystery3.dat file, as we can see from the unsolved board, the digits
+are more concentrated in specific areas of the board, allowing a
+solver to solve certain areas of the board easier. 
+
