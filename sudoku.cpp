@@ -287,3 +287,46 @@ bool solve_board(char board[9][9]) {
   
   return false;
 }
+
+
+/* this function is identical to the above, but measures the recursion
+   depth and backward recurses of the function. I have kept both functions
+   to ensure the function definition in the specification matches the 
+   solution. */
+bool solve_board(char board[9][9], int &back_count, int &depth) {
+
+  /* if the board is complete, we have solved the board. */
+  if (is_complete(board))
+    return true;
+
+  /* find the next empty position to make a move. */
+  char position[2];
+  load_empty_position(position, board);
+
+  
+  /* try each digit for the loaded position. */
+  for (char digit = '1'; digit <= '9'; digit++) {
+
+    /* make the move if it's possible. */
+      if (make_move(position, digit, board)) {
+
+	/* increment recursion depth on recursive call. */
+	depth++;
+	
+	/*  return true if the move solves the board. */
+	if (solve_board(board, back_count, depth)) {
+	  return true;
+	}
+
+	/* backward recurse happened. */
+	back_count++;
+	depth--;
+	
+	/* clear the move if it doesn't solve the board. */
+	set_square_empty(position, board);
+      }
+  }
+  /* the board has no solution, every digit has been tried. */
+  
+  return false;
+}

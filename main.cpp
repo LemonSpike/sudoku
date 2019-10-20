@@ -7,7 +7,7 @@
 using namespace std;
 
 void load_easy_board_and_check_complete(char board[9][9]);
-void load_solve_and_display_board(char filename[30], char board[9][9], bool show_time = false);
+void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse = false);
 void attempt_move_and_display_board(const char move[2], const char digit, char board[9][9]);
 void check_board_saves_correctly(char *filename, char board[9][9]);
 void print_result_of_save_board(char *filename, char board[9][9]);
@@ -97,15 +97,15 @@ int main() {
   cout << "=================== Question 5 ===================" << "\n\n";
 
   /* load, solve, display and time profile sudoku solves for each board. */
-  bool show_time = true;
+  bool should_analyse = true;
   strcpy(filename, "mystery1");
-  load_solve_and_display_board(filename, board, show_time);
+  load_solve_and_display_board(filename, board, should_analyse);
 
   strcpy(filename, "mystery2");
-  load_solve_and_display_board(filename, board, show_time);
+  load_solve_and_display_board(filename, board, should_analyse);
 
   strcpy(filename, "mystery3");
-  load_solve_and_display_board(filename, board, show_time);
+  load_solve_and_display_board(filename, board, should_analyse);
 
   return 0;
 }
@@ -142,7 +142,7 @@ void attempt_move_and_display_board(const char move[2],
   cout << "a valid move. The board is:" << '\n';
 
   /* display board to check move was undone if invalid, or updated
-     otherwise. */
+     board otherwise. */
   display_board(board);
 }
 
@@ -168,7 +168,7 @@ void check_board_saves_correctly(char *filename, char board[9][9]) {
 
 /* This function loads a board from a file, solves and displays it.
    It also optionally displays the time taken to solve it. */
-void load_solve_and_display_board(char filename[30], char board[9][9], bool show_time) {
+void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse) {
 
   /* get filename with .dat extension. */
   char full_filename[40];
@@ -183,10 +183,12 @@ void load_solve_and_display_board(char filename[30], char board[9][9], bool show
 
   bool board_solve;
   chrono::duration<double> diff;
+  int back_count = 0;
+  int depth = 0;
   /* time profiling for sudoku solve. */
-  if (show_time) {
+  if (should_analyse) {
     chrono::time_point<chrono::system_clock> start = chrono::system_clock::now();
-    board_solve = solve_board(board);
+    board_solve = solve_board(board, back_count, depth);
     chrono::time_point<chrono::system_clock> end = chrono::system_clock::now();
     diff = end-start;
   } else {
@@ -203,8 +205,11 @@ void load_solve_and_display_board(char filename[30], char board[9][9], bool show
   }
 
   /* print out time taken. */
-  if (show_time)
+  if (should_analyse) {
     cout << "Time taken: " << diff.count() << " s" << endl << endl;
+    cout << "Recursion depth: " << depth << endl;
+    cout << "Backwards recurse count: " << back_count << endl << endl;
+  }
 }
 
 /* save board to file helper. */

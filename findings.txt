@@ -4,9 +4,8 @@ The results showed that:
 2. Very Hard Puzzle to Solve: mystery1.dat
 3. Hard Puzzle to Solve: mystery3.dat
 
-This was discovered as solve_board returned false for mystery2.dat,
-showing that this puzzle was impossible, and by time profiling
-solve_board for each case.
+This was discovered from solve_board returning false for mystery2.dat
+only, and measuring recursion depth along with time to solve for each board.
 
 The program main.cpp output is as follows:
 
@@ -56,7 +55,10 @@ H | 3 : 9 : 7 | 6 : 5 : 4 | 8 : 2 : 1 |
   +---+---+---+---+---+---+---+---+---+
 I | 2 : 4 : 5 | 1 : 9 : 8 | 7 : 3 : 6 |
   +===========+===========+===========+
-Time taken: 0.048066 s
+Time taken: 0.041429 s
+
+Recursion depth: 58
+Backwards recurse count: 54660
 
 Loading Sudoku board from file 'mystery2.dat'... Success!
 
@@ -102,7 +104,10 @@ H | 1 : 6 :   |   :   :   |   :   : 7 |
   +---+---+---+---+---+---+---+---+---+
 I |   :   :   | 5 :   :   |   : 8 :   |
   +===========+===========+===========+
-Time taken: 0.005269 s
+Time taken: 0.004361 s
+
+Recursion depth: 0
+Backwards recurse count: 6462
 
 Loading Sudoku board from file 'mystery3.dat'... Success!
 
@@ -148,40 +153,80 @@ H | 1 : 5 : 3 | 9 : 6 : 8 | 4 : 2 : 7 |
   +---+---+---+---+---+---+---+---+---+
 I | 2 : 7 : 6 | 3 : 4 : 1 | 9 : 8 : 5 |
   +===========+===========+===========+
-Time taken: 0.01571 s
+Time taken: 0.016556 s
+
+Recursion depth: 57
+Backwards recurse count: 19210
 
 =================== Question 5 ===================
 
-As we can see the solutions for mystery1.dat and mystery3.dat are
-valid.
+As was visually validated online (https://www.sudoku-solutions.com)
+the solutions for mystery1.dat and mystery3.dat are
+valid. mystery2.dat was similarly validated as unsolvable.
 
 In main.cpp, I measured the time taken for calling the solve_board
 function:
-- mystery1.dat took 0.048066s to solve.
-- mystery2.dat took 0.005269s to find out that the puzzle was
+- mystery1.dat took 0.041429s to solve.
+- mystery2.dat took 0.004361s to find out that the puzzle was
 impossible.
-- mystery3.dat took 0.01571s to solve.
+- mystery3.dat took 0.016556s to solve.
 
-From this I inferred that the longer a puzzle took to be solved, the
-harder it was. I thought more difficult puzzles would have very few
-solutions, so more instructions would need to be made to exhaustively
-search for a solution.
+I inferred that the longer a puzzle took to be solved, the harder it
+was. Challenging sudoku puzzles are not under constrained, i.e
+have many possible solutions. They require exploring longer, precise
+sequences of moves and have typically one solution. As such, measuring
+time would be a good indicator of difficulty, as the number of
+instructions to be executed to exhaust all possible solution moves
+would be larger.
 
-Solving mystery2.dat takes the least time as solve_board quickly
-discovers that there are not many possible moves (make_move returns
-false for all positions quite early in the program). This explains the
-large time difference between solving mystery3.dat and mystery2.dat,
-taking approximately 3 times longer to solve.
+As such, we can infer from the data that the board which takes the
+least time to complete solve_board is likely to be the impossible puzzle.
+This is because the algorithm quickly discovers that there are not
+any possible solution moves i.e make_move returns false for all positions
+quite early in the program. This explains the large time difference
+between solving mystery3.dat and mystery2.dat (the unsolvable puzzle);
+it takes a factor of 3 times longer to solve.
 
 The number of missing digits in each 'mystery' file is:
 mystery1 - 58
 mystery2 - 57
 mystery3 - 57
 
-This shows that they are all similarly difficult-to-solve puzzles.
+This shows that they are all similarly difficult-to-solve puzzles on
+the surface, and so this was used as a guide measure of
+difficulty. It would make sense that for solvable puzzles, that the
+recursion depth would equal these numbers for solvable puzzles.
 
-Even though there is only one less missing digit(57) in the original
-mystery3.dat file, as we can see from the unsolved board, the digits
-are more concentrated in specific areas of the board, allowing a
-solver to solve certain areas of the board easier. 
+The recursion depths are provided below:
+mystery1 - 58
+mystery2 - 0
+mystery3 - 57
 
+This provides a more precise measure of difficulty for the puzzle,
+providing additional data for whether a puzzle is unsolvable (compared to
+only the number of missing digits). So in fact, even without looking at the
+return value of solve_board, we can see that mystery2 is unsolvable as
+its recursion depth is 0.
+
+We can see also that the recursion depth is marginally larger for
+mystery1 than mystery3, and even this small difference would mean an
+exponential increase in possible moves. Hence as more moves are
+possible, and we expect only one valid solution, we can predict
+mystery1 to be the very hard puzzle, and mystery3 to be the hard puzzle.
+
+The backwards recurse count similarly assesses the difficulty of
+puzzles.
+
+The backwards recurse counts are provided below:
+mystery1 - 54660
+mystery2 - 6462
+mystery3 - 19210
+
+This shows in more detail how the number of instructions executed to
+complete solve_board increases exponentially with the backwards
+recurse count. It's also closely correlated with the timing results
+(as expected). We can infer that mystery2 was either impossible or
+easy to solve, and to distinguish between the two cases we could
+combine this metric with the recursion depth, or return value. But we
+can see clearly that mystery1 is harder to solve than mystery3 by the
+large difference of 35450.
