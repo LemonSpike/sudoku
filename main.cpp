@@ -1,12 +1,16 @@
 #include <iostream>
 #include <cstdio>
-#include <chrono>
+#include <chrono> // used for timing.
 #include <cstring>
 #include "sudoku.h"
 
 using namespace std;
 
-void load_solve_and_display_board(const char filename[9], char board[9][9]);
+void load_easy_board_and_check_complete(char board[9][9]);
+void load_solve_and_display_board(char filename[30], char board[9][9], bool show_time = false);
+void attempt_move_and_display_board(const char move[2], const char digit, char board[9][9]);
+void check_board_saves_correctly(char *filename, char board[9][9]);
+void print_result_of_save_board(char *filename, char board[9][9]);
 
 int main() {
 
@@ -24,152 +28,172 @@ int main() {
 
   cout << "=================== Question 1 ===================" << "\n\n";
 
-  load_board("easy.dat", board);
-  cout << "Board is ";
-  if (!is_complete(board))
-    cout << "NOT ";
-  cout << "complete." << "\n\n";
-
-  load_board("easy-solution.dat", board);
-  cout << "Board is ";
-  if (!is_complete(board))
-    cout << "NOT ";
-  cout << "complete." << "\n\n";
+  load_easy_board_and_check_complete(board);
 
   cout << "=================== Question 2 ===================" << "\n\n";
 
   load_board("easy.dat", board);
 
   // Should fail due to invalid position.
-  cout << "Putting '9' into Ko is ";
-  if (!make_move("Ko", '9', board))
-    cout << "NOT ";
-  cout << "a valid move. The board is:" << '\n';
-  display_board(board);
+  attempt_move_and_display_board("Ko",'9', board);
 
   // Should fail due to invalid digit.
-  cout << "Putting 'a' into A1 is ";
-  if (!make_move("A1", 'a', board))
-    cout << "NOT ";
-  cout << "a valid move. The board is:" << '\n';
-  display_board(board);
-  
-  // Should be OK
-  cout << "Putting '1' into I8 is ";
-  if (!make_move("I8", '1', board)) 
-    cout << "NOT ";
-  cout << "a valid move. The board is:" << '\n';
-  display_board(board);
+  attempt_move_and_display_board("A1",'0', board);
+  attempt_move_and_display_board("A1",'a', board);  
 
+  // Should work.
+  attempt_move_and_display_board("I8",'1', board);
+  
   // Should fail because position already has digit.
-  cout << "Putting '3' into I8 is ";
-  if (!make_move("I8", '3', board)) 
-    cout << "NOT ";
-  cout << "a valid move. The board is:" << '\n';
-  display_board(board);
+  attempt_move_and_display_board("I8",'3', board);
   
   // Should fail due to column check.
-  cout << "Putting '1' into D4 is ";
-  if (!make_move("D4", '1', board))
-    cout << "NOT ";
-  cout << "a valid move. The board is:" << '\n';
-  display_board(board);
-
+  attempt_move_and_display_board("D4",'1', board);
+  
   // Should fail due to row check.
-  cout << "Putting '9' into D8 is ";
-  if (!make_move("D8", '9', board))
-    cout << "NOT ";
-  cout << "a valid move. The board is:" << '\n';
-  display_board(board);
-
+  attempt_move_and_display_board("D8",'9', board);
+  
   // Should fail due to box check.
-  cout << "Putting '2' into D7 is ";
-  if (!make_move("D7", '2', board))
-    cout << "NOT ";
-  cout << "a valid move. The board is:" << '\n';
-  display_board(board);
+  attempt_move_and_display_board("D7",'2', board);
   
   cout << "=================== Question 3 ===================" << "\n\n";
 
-  load_board("easy.dat", board);
-  if (save_board("easy-copy.dat", board))
-    cout << "Save board to 'easy-copy.dat' successful." << '\n';
-  else
-    cout << "Save board failed." << '\n';
-  cout << '\n';
+  // should save correctly.
+  char filename[40] = "easy";
+  check_board_saves_correctly(filename, board);
 
-  char board_two[9][9];
-  load_board("easy-copy.dat", board_two);
-  cout << '\n' << "Displaying Sudoku board_two with display_board():" << '\n';
-  display_board(board_two);
-  cout << "Done!" << "\n\n";
+  // should not save invalid board state.
+  board[1][2] = 'r';
+  strcpy(filename, "invalid");
+  cout << "Check board with invalid character is not saved." << endl;
+  print_result_of_save_board(filename, board);
+
+  board[3][2] = '0';
+  cout << "Check board with invalid '0' digit is not saved." << endl;
+  print_result_of_save_board(filename, board);
   
   cout << "=================== Question 4 ===================" << "\n\n";
 
-  /* Load, solve and save easy board. */
-  load_board("easy.dat", board);
+  /* load, solve and save easy board. */
+  strcpy(filename, "easy");
+  load_solve_and_display_board(filename, board);
+  print_result_of_save_board(filename, board);
   
-  if (solve_board(board)) {
-    cout << "The 'easy' board has a solution:" << '\n';
-    display_board(board);
-  } else 
-    cout << "A solution cannot be found." << '\n';
-  cout << '\n';
+  /* load, solve and save medium board. */
+  strcpy(filename, "medium");
+  load_solve_and_display_board(filename, board);
+  print_result_of_save_board(filename, board);
+
+  /* load, solve and save very hard board. */
+  strcpy(filename, "very_hard");
+  load_solve_and_display_board(filename, board);
+  print_result_of_save_board(filename, board);
+
+  /* load, solve and save super easy board. */
+  strcpy(filename, "super_easy");
+  load_solve_and_display_board(filename, board);
+  print_result_of_save_board(filename, board);
   
-  if (save_board("easy-generated-solution.dat", board))
-    cout << "Save board to 'easy-generated-solution.dat' successful." << '\n';
-  else
-    cout << "Save board failed." << '\n';
-  cout << '\n';
-
-  /* Load, solve and save medium board. */
-  load_board("medium.dat", board);
-  
-  if (solve_board(board)) {
-    cout << "The 'medium' board has a solution:" << '\n';
-    display_board(board);
-  } else 
-    cout << "A solution cannot be found." << '\n';
-  cout << '\n';
-
-  if (save_board("medium-solution.dat", board))
-    cout << "Save board to 'medium-solution.dat' successful." << '\n';
-  else
-    cout << "Save board failed." << '\n';
-  cout << '\n';
-
   cout << "=================== Question 5 ===================" << "\n\n";
 
-  char filename[9];
-  strncpy(filename, "mystery1", 9);
-  load_solve_and_display_board(filename, board);
+  /* load, solve, display and time profile sudoku solves for each board. */
+  bool show_time = true;
+  strcpy(filename, "mystery1");
+  load_solve_and_display_board(filename, board, show_time);
 
-  strncpy(filename,"mystery2", 9);
-  load_solve_and_display_board(filename, board);
+  strcpy(filename, "mystery2");
+  load_solve_and_display_board(filename, board, show_time);
 
-  strncpy(filename, "mystery3", 9);
-  load_solve_and_display_board(filename, board);
+  strcpy(filename, "mystery3");
+  load_solve_and_display_board(filename, board, show_time);
 
   return 0;
 }
 
-/* This function loads a board from a file, solves and displays it. */
-void load_solve_and_display_board(const char filename[9], char board[9][9]) {
+void load_easy_board_and_check_complete(char board[9][9]) {
+  // load easy board.
+  load_board("easy.dat", board);
 
-  char full_filename[13];
-  strncpy(full_filename, filename, 9);
+  // shouldn't be complete.
+  cout << "Board is ";
+  if (!is_complete(board))
+    cout << "NOT ";
+  cout << "complete." << "\n\n";
+
+  // load easy solution board.
+  load_board("easy-solution.dat", board);
+
+  // should be complete.
+  cout << "Board is ";
+  if (!is_complete(board))
+    cout << "NOT ";
+  cout << "complete." << "\n\n";
+}
+
+/* attempt move and display result on board. */
+void attempt_move_and_display_board(const char move[2],
+				    const char digit,
+				    char board[9][9]) {
+
+  // output whether move is valid.
+  cout << "Putting '" << digit << "' into '" << move << "' is ";
+  if (!make_move(move, digit, board))
+    cout << "NOT ";
+  cout << "a valid move. The board is:" << '\n';
+
+  /* display board to check move was undone if invalid, or updated
+     otherwise. */
+  display_board(board);
+}
+
+/* visually checking if board saved correctly. */
+void check_board_saves_correctly(char *filename, char board[9][9]) {
+
+  // load board with file extension.
+  char filename_extended[40];
+  strcpy(filename_extended, filename);
+  strcat(filename_extended, ".dat");
+  load_board(filename_extended, board);
+
+  // print message if save was successful / failure.
+  print_result_of_save_board(filename, board);
+
+  // display saved board.
+  char board_two[9][9];
+  load_board(filename, board_two);
+  cout << endl << "Displaying '" << filename << "' board:" << endl;
+  display_board(board_two);
+  cout << "Done!" << endl << endl;
+}
+
+/* This function loads a board from a file, solves and displays it.
+   It also optionally displays the time taken to solve it. */
+void load_solve_and_display_board(char filename[30], char board[9][9], bool show_time) {
+
+  /* get filename with .dat extension. */
+  char full_filename[40];
+  strcpy(full_filename, filename);
   strcat(full_filename, ".dat");
   load_board(full_filename, board);
 
+  /* display unsolved board. */
   cout << endl << "Displaying unsolved Sudoku board " << filename;
   cout << " with display_board():" << endl;
   display_board(board);
+
+  bool board_solve;
+  chrono::duration<double> diff;
+  /* time profiling for sudoku solve. */
+  if (show_time) {
+    chrono::time_point<chrono::system_clock> start = chrono::system_clock::now();
+    board_solve = solve_board(board);
+    chrono::time_point<chrono::system_clock> end = chrono::system_clock::now();
+    diff = end-start;
+  } else {
+    board_solve = solve_board(board);
+  }
   
-  chrono::time_point<chrono::system_clock> start = chrono::system_clock::now();
-  bool board_solve = solve_board(board);
-  chrono::time_point<chrono::system_clock> end = chrono::system_clock::now();
-  chrono::duration<double> diff = end-start;
-  
+  /* display solution board. */
   if (board_solve) {
     cout << "The '" << filename << "' board has a solution:" << endl;
     display_board(board);
@@ -178,5 +202,17 @@ void load_solve_and_display_board(const char filename[9], char board[9][9]) {
     display_board(board);
   }
 
-  cout << "Time taken: " << diff.count() << " s" << endl << endl;
+  /* print out time taken. */
+  if (show_time)
+    cout << "Time taken: " << diff.count() << " s" << endl << endl;
+}
+
+/* save board to file helper. */
+void print_result_of_save_board(char *filename, char board[9][9]) {
+  strcat(filename, "-copy.dat");
+  if (save_board(filename, board))
+    cout << "Save board to '" << filename << "' successful." << '\n';
+  else
+    cout << "Save board failed." << '\n';
+  cout << endl;
 }
