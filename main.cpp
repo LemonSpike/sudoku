@@ -7,6 +7,7 @@
 using namespace std;
 
 void load_easy_board_and_check_complete(char board[9][9]);
+void solve_board_and_print_result(char filename[30], char board[9][9], bool should_analyse);
 void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse = false);
 void attempt_move_and_display_board(const char move[2], const char digit, char board[9][9]);
 void check_board_saves_correctly(char *filename, char board[9][9]);
@@ -35,7 +36,12 @@ int main() {
   load_board("easy.dat", board);
 
   // Should fail due to invalid position.
-  attempt_move_and_display_board("Ko",'9', board);
+  attempt_move_and_display_board("k9",'8', board);
+  attempt_move_and_display_board("J2",'4', board);
+  attempt_move_and_display_board("11",'7', board);
+  attempt_move_and_display_board("A0",'2', board);
+  attempt_move_and_display_board("I10",'0', board);
+  attempt_move_and_display_board("Io",'9', board);
 
   // Should fail due to invalid digit.
   attempt_move_and_display_board("A1",'0', board);
@@ -43,6 +49,8 @@ int main() {
 
   // Should work.
   attempt_move_and_display_board("I8",'1', board);
+  attempt_move_and_display_board("H7",'4', board);
+  attempt_move_and_display_board("A8",'7', board);
   
   // Should fail because position already has digit.
   attempt_move_and_display_board("I8",'3', board);
@@ -84,19 +92,19 @@ int main() {
   load_solve_and_display_board(filename, board);
   print_result_of_save_board(filename, board);
 
-  /* load, solve and save very hard board. */
-  strcpy(filename, "very_hard");
-  load_solve_and_display_board(filename, board);
-  print_result_of_save_board(filename, board);
+  /* these solves should fail because of an invalid board. */
+  strcpy(filename, "invalid_1");
+  load_board("easy.dat", board);
+  board[1][2] = '0';
+  solve_board_and_print_result(filename, board, false);
 
-  /* load, solve and save super easy board. */
-  strcpy(filename, "super_easy");
-  load_solve_and_display_board(filename, board);
-  print_result_of_save_board(filename, board);
-  
+  strcpy(filename, "invalid_2");
+  board[1][2] = 'a';
+  solve_board_and_print_result(filename, board, false);
+    
   cout << "=================== Question 5 ===================" << "\n\n";
 
-  /* load, solve, display and time profile sudoku solves for each board. */
+  /* solve, display and analyse sudoku solves for each board. */
   bool should_analyse = true;
   strcpy(filename, "mystery1");
   load_solve_and_display_board(filename, board, should_analyse);
@@ -166,21 +174,7 @@ void check_board_saves_correctly(char *filename, char board[9][9]) {
   cout << "Done!" << endl << endl;
 }
 
-/* This function loads a board from a file, solves and displays it.
-   It also optionally displays the time taken to solve it. */
-void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse) {
-
-  /* get filename with .dat extension. */
-  char full_filename[40];
-  strcpy(full_filename, filename);
-  strcat(full_filename, ".dat");
-  load_board(full_filename, board);
-
-  /* display unsolved board. */
-  cout << endl << "Displaying unsolved Sudoku board " << filename;
-  cout << " with display_board():" << endl;
-  display_board(board);
-
+void solve_board_and_print_result(char filename[30], char board[9][9], bool should_analyse) {
   bool board_solve;
   chrono::duration<double> diff;
   int back_count = 0;
@@ -210,6 +204,24 @@ void load_solve_and_display_board(char filename[30], char board[9][9], bool shou
     cout << "Recursion depth: " << depth << endl;
     cout << "Backwards recurse count: " << back_count << endl << endl;
   }
+}
+
+/* This function loads a board from a file, solves and displays it.
+   It also optionally displays the time taken to solve it. */
+void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse) {
+
+  /* get filename with .dat extension. */
+  char full_filename[40];
+  strcpy(full_filename, filename);
+  strcat(full_filename, ".dat");
+  load_board(full_filename, board);
+
+  /* display unsolved board. */
+  cout << endl << "Displaying unsolved Sudoku board " << filename;
+  cout << " with display_board():" << endl;
+  display_board(board);
+
+  solve_board_and_print_result(filename, board, should_analyse);
 }
 
 /* save board to file helper. */

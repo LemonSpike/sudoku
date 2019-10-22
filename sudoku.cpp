@@ -208,12 +208,12 @@ bool save_board(const char *filename, const char board[9][9]) {
   
   int row = 0;
   while (out && row < 9) {
-    for (int n = 0; n < 9; n++) {
-      if (board[row][n] != '.' && !isdigit(board[row][n])) {
+    for (int column = 0; column < 9; column++) {
+      if (board[row][column] != '.' && !digit_exists_on_position(board, row, column)) {
 	out.close();
 	return false;
       }
-      out.put(board[row][n]);
+      out.put(board[row][column]);
       out.flush();
     }
     out << endl;
@@ -230,6 +230,18 @@ bool save_board(const char *filename, const char board[9][9]) {
 }		  
 
 /* Question 4 */
+
+/* this is a function which tests if the board only contains digits 1-9. */
+bool board_is_valid(const char board[9][9]) {
+  for (int row = 0; row < 9; row++) {
+    for (int column = 0; column < 9; column++) {
+      if (board[row][column] != '.' && !digit_exists_on_position(board, row, column)) {
+	  return false;
+	}
+    }
+  }
+    return true;
+}
 
 /* this is a helper function to clear a square. */
 bool set_square_empty(const char position[2], char board[9][9]) {
@@ -260,6 +272,10 @@ void load_empty_position(char position[2], const char board[9][9]) {
    the board with the solution. Otherwise, it returns false. */
 bool solve_board(char board[9][9]) {
 
+  /* test if board contains only valid digits. */
+  if (!board_is_valid(board))
+    return false;
+  
   /* if the board is complete, we have solved the board. */
   if (is_complete(board))
     return true;
@@ -295,6 +311,10 @@ bool solve_board(char board[9][9]) {
    solution. */
 bool solve_board(char board[9][9], int &back_count, int &depth) {
 
+  /* test if board contains only valid digits. */
+  if (!board_is_valid(board))
+    return false;
+  
   /* if the board is complete, we have solved the board. */
   if (is_complete(board))
     return true;
@@ -314,9 +334,8 @@ bool solve_board(char board[9][9], int &back_count, int &depth) {
 	depth++;
 	
 	/*  return true if the move solves the board. */
-	if (solve_board(board, back_count, depth)) {
+	if (solve_board(board, back_count, depth))
 	  return true;
-	}
 
 	/* backward recurse happened. */
 	back_count++;
