@@ -6,7 +6,8 @@
 
 using namespace std;
 
-void load_easy_board_and_check_complete(char board[9][9]);
+void print_is_complete(char board[9][9]);
+void load_board_and_check_complete(const char filename[30], char board[9][9]);
 void solve_board_and_print_result(char filename[30], char board[9][9], bool should_analyse);
 void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse = false);
 void attempt_move_and_display_board(const char move[2], const char digit, char board[9][9]);
@@ -29,7 +30,20 @@ int main() {
 
   cout << "=================== Question 1 ===================" << "\n\n";
 
-  load_easy_board_and_check_complete(board);
+  //load easy board, shouldn't be complete.
+  load_board_and_check_complete("easy.dat", board);
+
+  // load easy solution board, should be complete.
+  load_board_and_check_complete("easy-solution.dat", board);
+
+  // should be incomplete with invalid digits.
+  cout << "Checking if board with '0' digit is complete: " << endl;
+  board[1][1] = '0';
+  print_is_complete(board);
+
+  cout << "Checking if board with 'u' digit is complete: " << endl;
+  board[1][1] = 'u';
+  print_is_complete(board);  
 
   cout << "=================== Question 2 ===================" << "\n\n";
 
@@ -118,24 +132,19 @@ int main() {
   return 0;
 }
 
-void load_easy_board_and_check_complete(char board[9][9]) {
-  // load easy board.
-  load_board("easy.dat", board);
-
-  // shouldn't be complete.
+/* print whether the board is or isn't complete. */
+void print_is_complete(char board[9][9]) {
   cout << "Board is ";
   if (!is_complete(board))
     cout << "NOT ";
   cout << "complete." << "\n\n";
+}
 
-  // load easy solution board.
-  load_board("easy-solution.dat", board);
+/* load board from file and check complete. */
+void load_board_and_check_complete(const char filename[30], char board[9][9]) {
 
-  // should be complete.
-  cout << "Board is ";
-  if (!is_complete(board))
-    cout << "NOT ";
-  cout << "complete." << "\n\n";
+  load_board(filename, board);
+  print_is_complete(board);
 }
 
 /* attempt move and display result on board. */

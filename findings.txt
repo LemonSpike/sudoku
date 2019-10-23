@@ -4,8 +4,10 @@ The results showed that:
 2. Very Hard Puzzle to Solve: mystery1.dat
 3. Hard Puzzle to Solve: mystery3.dat
 
-This was discovered from solve_board returning false for mystery2.dat
-only, and measuring recursion depth along with time to solve for each board.
+This was discovered from the recursion depth, backwards recurse count,
+time for solve_board to complete and solve_boards return
+value. mystery2.dat had a recursion depth of 0, and returned false,
+hence classifying the board as unsolvable.
 
 The program main.cpp output is as follows:
 
