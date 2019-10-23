@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void print_is_complete(char board[9][9]);
+void print_is_complete(char board[9][9]); 
 void load_board_and_check_complete(const char filename[30], char board[9][9]);
 void solve_board_and_print_result(char filename[30], char board[9][9], bool should_analyse);
 void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse = false);
