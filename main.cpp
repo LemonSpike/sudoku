@@ -6,13 +6,13 @@
 
 using namespace std;
 
-void print_is_complete(char board[9][9]);
-void load_board_and_check_complete(const char *filename, char board[9][9]);
-void solve_board_and_print_result(const char *filename, char board[9][9], bool should_analyse);
-void load_solve_and_display_board(const char *filename, char board[9][9], bool should_analyse = false);
+void print_is_complete(char board[9][9]); 
+void load_board_and_check_complete(const char filename[30], char board[9][9]);
+void solve_board_and_print_result(char filename[30], char board[9][9], bool should_analyse);
+void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse = false);
 void attempt_move_and_display_board(const char move[2], const char digit, char board[9][9]);
-void check_board_saves_correctly(const char *filename, char board[9][9]);
-void print_result_of_save_board(const char *filename, char board[9][9]);
+void check_board_saves_correctly(char *filename, char board[9][9]);
+void print_result_of_save_board(char *filename, char board[9][9]);
 
 int main() {
 
@@ -81,12 +81,12 @@ int main() {
   cout << "=================== Question 3 ===================" << "\n\n";
 
   // should save correctly.
-  const char *filename = "easy";
+  char filename[40] = "easy";
   check_board_saves_correctly(filename, board);
 
   // should not save invalid board state.
   board[1][2] = 'r';
-  filename = "invalid";
+  strcpy(filename, "invalid");
   cout << "Check board with invalid character is not saved." << endl;
   print_result_of_save_board(filename, board);
 
@@ -97,22 +97,22 @@ int main() {
   cout << "=================== Question 4 ===================" << "\n\n";
 
   /* load, solve and save easy board. */
-  filename = "easy";
+  strcpy(filename, "easy");
   load_solve_and_display_board(filename, board);
   print_result_of_save_board(filename, board);
   
   /* load, solve and save medium board. */
-  filename = "medium";
+  strcpy(filename, "medium");
   load_solve_and_display_board(filename, board);
   print_result_of_save_board(filename, board);
 
   /* these solves should fail because of an invalid board. */
-  filename = "invalid_1";
+  strcpy(filename, "invalid_1");
   load_board("easy.dat", board);
   board[1][2] = '0';
   solve_board_and_print_result(filename, board, false);
 
-  filename = "invalid_2";
+  strcpy(filename, "invalid_2");
   board[1][2] = 'a';
   solve_board_and_print_result(filename, board, false);
     
@@ -120,13 +120,13 @@ int main() {
 
   /* solve, display and analyse sudoku solves for each board. */
   bool should_analyse = true;
-  filename = "mystery1";
+  strcpy(filename, "mystery1");
   load_solve_and_display_board(filename, board, should_analyse);
 
-  filename = "mystery2";
+  strcpy(filename, "mystery2");
   load_solve_and_display_board(filename, board, should_analyse);
 
-  filename = "mystery3";
+  strcpy(filename, "mystery3");
   load_solve_and_display_board(filename, board, should_analyse);
 
   return 0;
@@ -141,7 +141,7 @@ void print_is_complete(char board[9][9]) {
 }
 
 /* load board from file and check complete. */
-void load_board_and_check_complete(const char *filename, char board[9][9]) {
+void load_board_and_check_complete(const char filename[30], char board[9][9]) {
 
   load_board(filename, board);
   print_is_complete(board);
@@ -164,14 +164,12 @@ void attempt_move_and_display_board(const char move[2],
 }
 
 /* visually checking if board saved correctly. */
-void check_board_saves_correctly(const char *filename, char board[9][9]) {
+void check_board_saves_correctly(char *filename, char board[9][9]) {
 
   // load board with file extension.
-  const char *extension = ".dat";
-  int buffer_size = strlen(filename) + strlen(extension) + 1;
-  char *filename_extended = new char[buffer_size];
+  char filename_extended[40];
   strcpy(filename_extended, filename);
-  strcat(filename_extended, extension);
+  strcat(filename_extended, ".dat");
   load_board(filename_extended, board);
 
   // print message if save was successful / failure.
@@ -179,18 +177,13 @@ void check_board_saves_correctly(const char *filename, char board[9][9]) {
 
   // display saved board.
   char board_two[9][9];
-  const char *copy_extension = "-copy.dat";
-  char *copy_filename = new char[strlen(filename) + strlen(copy_extension) + 1];
-  strcpy(copy_filename, filename);
-  strcat(copy_filename, copy_extension);
-  
-  load_board(copy_filename, board_two);
-  cout << endl << "Displaying '" << copy_filename << "' board:" << endl;
+  load_board(filename, board_two);
+  cout << endl << "Displaying '" << filename << "' board:" << endl;
   display_board(board_two);
   cout << "Done!" << endl << endl;
 }
 
-void solve_board_and_print_result(const char *filename, char board[9][9], bool should_analyse) {
+void solve_board_and_print_result(char filename[30], char board[9][9], bool should_analyse) {
   bool board_solve;
   chrono::duration<double> diff;
   int back_count = 0;
@@ -224,14 +217,12 @@ void solve_board_and_print_result(const char *filename, char board[9][9], bool s
 
 /* This function loads a board from a file, solves and displays it.
    It also optionally displays the time taken to solve it. */
-void load_solve_and_display_board(const char *filename, char board[9][9], bool should_analyse) {
+void load_solve_and_display_board(char filename[30], char board[9][9], bool should_analyse) {
 
-  /* load filename with .dat extension. */
-  const char *extension = ".dat";
-  int buffer_size = strlen(filename) + strlen(extension) + 1;
-  char *full_filename = new char[buffer_size];
+  /* get filename with .dat extension. */
+  char full_filename[40];
   strcpy(full_filename, filename);
-  strcat(full_filename, extension);
+  strcat(full_filename, ".dat");
   load_board(full_filename, board);
 
   /* display unsolved board. */
@@ -243,19 +234,10 @@ void load_solve_and_display_board(const char *filename, char board[9][9], bool s
 }
 
 /* save board to file helper. */
-void print_result_of_save_board(const char *filename, char board[9][9]) {
-
-  /* construct filename. */
-  const char *suffix = "-copy.dat";
-  int buffer_size = strlen(filename) + strlen(suffix) + 1;
-  
-  char *filename_of_copy = new char[buffer_size];
-  strcpy(filename_of_copy, filename);
-  strcat(filename_of_copy, suffix);
-
-  /* save board and print result. */
+void print_result_of_save_board(char *filename, char board[9][9]) {
+  strcat(filename, "-copy.dat");
   if (save_board(filename, board))
-    cout << "Save board to '" << filename_of_copy << "' successful." << '\n';
+    cout << "Save board to '" << filename << "' successful." << '\n';
   else
     cout << "Save board failed." << '\n';
   cout << endl;
